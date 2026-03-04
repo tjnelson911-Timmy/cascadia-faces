@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAccounts, ADMIN_EMAIL } from '../hooks/useAccounts';
-import { verifyPassword, hashPassword } from '../utils/authUtils';
+import { verifyPassword, hashPassword, getDefaultPasswordHash } from '../utils/authUtils';
 
 const AuthContext = createContext(null);
 
@@ -56,7 +56,33 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(
     async (email, password) => {
-      const account = getAccount(email);
+      let account = getAccount(email);
+
+      // If no account found, check if an employee with this email exists
+      // and auto-create their account (handles cross-device localStorage)
+      if (!account) {
+        try {
+          const employees = JSON.parse(
+            localStorage.getItem('cascadia-employees') || '[]'
+          );
+          const emp = employees.find(
+            (e) => e.email && e.email.toLowerCase() === email.trim().toLowerCase()
+          );
+          if (emp) {
+            const hash = await getDefaultPasswordHash();
+            const newAccount = {
+              email: emp.email,
+              passwordHash: hash,
+              role: 'user',
+              mustChangePassword: true,
+              employeeId: emp.id,
+            };
+            await ensureAccountForEmployee(emp);
+            account = newAccount;
+          }
+        } catch { /* ignore */ }
+      }
+
       if (!account) {
         return { success: false, error: 'No account found for this email.' };
       }
@@ -74,7 +100,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem(SESSION_KEY, JSON.stringify(session));
       return { success: true, mustChangePassword: account.mustChangePassword };
     },
-    [getAccount]
+    [getAccount, ensureAccountForEmployee]
   );
 
   const changePassword = useCallback(
