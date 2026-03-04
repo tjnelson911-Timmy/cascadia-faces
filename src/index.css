@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  /* Cascadia HC teal palette */
+  --color-cascadia-50: #f0fdfa;
+  --color-cascadia-100: #ccfbf1;
+  --color-cascadia-200: #99f6e4;
+  --color-cascadia-300: #5eead4;
+  --color-cascadia-400: #2dd4bf;
+  --color-cascadia-500: #14b8a6;
+  --color-cascadia-600: #0b7280;
+  --color-cascadia-700: #186e77;
+  --color-cascadia-800: #115e67;
+  --color-cascadia-900: #0c4a52;
+  /* Warm green accent (growth/nurturing) */
+  --color-forest-50: #f0fdf4;
+  --color-forest-100: #dcfce7;
+  --color-forest-200: #bbf7d0;
+  --color-forest-300: #86efac;
+  --color-forest-400: #4ade80;
+  --color-forest-500: #22c55e;
+  --color-forest-600: #16a34a;
+  --color-forest-700: #15803d;
+  --color-forest-800: #166534;
+  --color-forest-900: #14532d;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
